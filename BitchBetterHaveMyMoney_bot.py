@@ -26,6 +26,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "15 mercado cartao_caixa"
     )
 
+async def total(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    all_rows = worksheet.get_all_values()[1:]
+    valores = [float(r[1]) for r in all_rows if r[0] == user_id]
+    total_gasto = sum(valores) if valores else 0
+    await update.message.reply_text(f"Você já gastou: R$ {total_gasto:.2f}")
+
+async def categoria_mais_gasta(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from collections import defaultdict
+    user_id = str(update.effective_user.id)
+    all_rows = worksheet.get_all_values()[1:]
+    categorias = defaultdict(float)
+    for r in all_rows:
+        if r[0] == user_id:
+            categorias[r[2]] += float(r[1])
+    if not categorias:
+        await update.message.reply_text("Nenhum gasto registrado ainda.")
+        return
+    categoria = max(categorias, key=categorias.get)
+    await update.message.reply_text(f"Categoria que você mais gastou: {categoria}")
+
 async def handle_expense(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
     parts = text.split()
@@ -48,6 +69,8 @@ async def handle_expense(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("total", total))
+    app.add_handler(CommandHandler("categoria_mais_gasta", categoria_mais_gasta))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_expense))
     app.run_polling()
 
