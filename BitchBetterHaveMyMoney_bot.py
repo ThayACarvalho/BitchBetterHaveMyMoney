@@ -7,7 +7,7 @@ from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes, CommandHandler
 
 # Decode Google Credentials
-creds_b64 = os.getenv("GOOGLE_SERVICE_ACCOUNT_B64")
+creds_b64 = os.getenv("GOOGLE_SERVICE_ACCOUNT_BASE64")
 creds_json = base64.b64decode(creds_b64).decode("utf-8")
 creds_dict = json.loads(creds_json)
 
