@@ -1,1 +1,2 @@
-worker: BitchBetterHaveMyMoney_bot.py
+worker: python BitchBetterHaveMyMoney_bot.py
+
